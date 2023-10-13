@@ -18,12 +18,12 @@ runs:
       run: terraform init
 
     - name: Terraform select Workspace
-      run: terraform select-or-create workspace env.workspace
+      run: terraform select-or-create workspace github.event.inputs.workspace
 
     - name: Terraform Validate
-      if: ${{env.workspace !=false}}
-      run: terraform validate -var-file=./env/${{ env.workspace }}.tfvars
+      if: ${{github.event.inputs.workspace !=false}}
+      run: terraform validate -var-file=./env/${{ github.event.inputs.workspace }}.tfvars
 
     - name: Terraform Validate
-      if: ${{env.workspace ==false}}
-      run: terraform validate -var-file=./env/${{ env.workspace }}.tfvars
+      if: ${{github.event.inputs.workspace ==false}}
+      run: terraform validate -var-file=./env/${{ github.event.inputs.workspace }}.tfvars

@@ -11,9 +11,9 @@ inputs:
 
 runs:
   - name: Terraform Apply
-    if: ${{env.workspace !=false}}
+    if: ${{github.event.inputs.workspace !=false}}
     run: terraform apply -auto-approve -var-file=./env/${{ github.workspace }}.tfvars
 
   - name: Terraform Apply
-    if: ${{env.workspace ==false}}
+    if: ${{github.event.inputs.workspace ==false}}
     run: terraform apply -auto-approve

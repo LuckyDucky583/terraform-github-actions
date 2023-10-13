@@ -12,9 +12,9 @@ inputs:
 runs:
   steps:
     - name: Terraform Plan
-      if: ${{env.workspace !=false}}
+      if: ${{github.event.inputs.workspace !=false}}
       run: terraform plan -var-file=./env/${{ github.workspace }}.tfvars
 
     - name: Terraform Plan Default Workspace
-      if: ${{env.workspace ==false}}
+      if: ${{github.event.inputs.workspace ==false}}
       run: terraform plan

@@ -3,6 +3,9 @@ name: Terraform CI
 on:
   workflow_call:
     inputs:
+      ref: 
+        type: string
+        default: "main"
       working-directory:
         type: string
         default: "."
@@ -22,36 +25,36 @@ jobs:
     if: github.event_name == 'pull_request'
     steps:
       - name: login
-        uses: ./.github/workflows/terraform-login
+        uses: ./.github/workflows/terraform-login.yml
       - name: terraform-init
-        uses: ./.github/workflows/terraform-init
+        uses: ./.github/workflows/terraform-init.yml
       - name: terraform-validate
         if: ${{ github.event.inputs.TOOGLE_DEV == true }}
-        uses: ./.github/workflows/terraform-validate
+        uses: ./.github/workflows/terraform-validate.yml
         with:
           workspace: dev
       - name: terraform-validate-in-default
         if: ${{ github.event.inputs.TOOGLE_DEV != true }}
-        uses: ./.github/workflows/terraform-validate
+        uses: ./.github/workflows/terraform-validate.yml
   terraform-plan-pr:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     steps:
       - name: login
-        uses: ./.github/workflows/terraform-login
+        uses: ./.github/workflows/terraform-login.yml
       - name: plan
         if: ${{ github.event.inputs.TOOGLE_DEV == true }}
-        uses: ./.github/workflows/terraform-plan
+        uses: ./.github/workflows/terraform-plan.yml
         with:
           workspace: dev
       - name: plan
         if: ${{ github.event.inputs.TOOGLE_QS == true }}
-        uses: ./.github/workflows/terraform-plan
+        uses: ./.github/workflows/terraform-plan.yml
         with:
           workspace: qs
       - name: plan
         if: ${{ github.event.inputs.TOOGLE_PROD == true }}
-        uses: ./.github/workflows/terraform-plan
+        uses: ./.github/workflows/terraform-plan.yml
         with:
           workspace: prod
   terraform-apply:
@@ -59,34 +62,34 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: login
-        uses: ./.github/workflows/terraform-login
+        uses: ./.github/workflows/terraform-login.yml
       - name: plan-dev
         if: ${{ github.event.inputs.TOOGLE_DEV == true }}
-        uses: ./.github/workflows/terraform-plan
+        uses: ./.github/workflows/terraform-plan.yml
         with:
           workspace: dev
       - name: plan-qs
         if: ${{ github.event.inputs.TOOGLE_QS == true }}
-        uses: ./.github/workflows/terraform-plan
+        uses: ./.github/workflows/terraform-plan.yml
         with:
           workspace: qs
       - name: plan-prod
         if: ${{ github.event.inputs.TOOGLE_PROD == true }}
-        uses: ./.github/workflows/terraform-plan
+        uses: ./.github/workflows/terraform-plan.yml
         with:
           workspace: prod
       - name: apply-dev
         if: (${{ github.event.inputs.TOOGLE_DEV == true }})
-        uses: ./.github/workflows/terraform-apply
+        uses: ./.github/workflows/terraform-apply.yml
         with:
           workspace: dev
       - name: apply-qs
         if: (${{ github.event.inputs.TOOGLE_qs == true }})
-        uses: ./.github/workflows/terraform-apply
+        uses: ./.github/workflows/terraform-apply.yml
         with:
           workspace: qs
       - name: apply-prod
         if: (${{ github.event.inputs.TOOGLE_PROD == true }})
-        uses: ./.github/workflows/terraform-apply
+        uses: ./.github/workflows/terraform-apply.yml
         with:
           workspace: prod

@@ -1,0 +1,25 @@
+name: terraform-apply
+
+on:
+  workflow_call:
+    inputs:
+      working-directory:
+        description: "The working directory where the terraform files are located"
+        type: string
+        required: true
+        default: "../terraform/"
+      workspace:
+        description: "The terraform workspace to use"
+        type: string
+        required: false
+
+jobs:
+  terraform-apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Terraform Apply
+        if: ${{github.event.inputs.workspace !=false}}
+        run: terraform apply -auto-approve -var-file=./env/${{ github.workspace }}.tfvars
+      - name: Terraform Apply
+        if: ${{github.event.inputs.workspace ==false}}
+        run: terraform apply -auto-approve

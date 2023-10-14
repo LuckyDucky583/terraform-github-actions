@@ -31,7 +31,7 @@ jobs:
         - name: Terraform Plan
           if: ${{ inputs.workspace != null }}
           run: |
-            terraform workspace select -or-create dev
+            terraform workspace select -or-create ${{inputs.workspace}}
             terraform plan -var-file=./env/dev.tfvars
 
         - name: Terraform Plan Default Workspace

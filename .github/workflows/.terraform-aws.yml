@@ -41,7 +41,7 @@ jobs:
       workspace: ${{ matrix.workspace }}
 
   terraform-apply:
-    if: (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    if: github.event_name == 'push'
     uses: ./.github/workflows/terraform-apply.yml
     with:
       working-directory: ${{ inputs.working-directory }}

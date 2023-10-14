@@ -9,16 +9,6 @@ on:
       workspaces:
         type: string
         default: '["default"]'
-      aws-access-key-id:
-        required: true
-        type: secret
-      aws-secret-access-key:
-        required: true
-        type: secret
-    secrets:
-      AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
-      AWS_SECRET_ACCESS_KEY: ${{ inputs.aws-secret-access-key }}
-
       
 jobs:
 
@@ -38,9 +28,7 @@ jobs:
     uses: ./.github/workflows/terraform-pre-plan.yml
     with:
       working-directory: ${{ inputs.working-directory }}
-    secrets:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    secrets: inherit
 
   terraform-plan-pr:
     needs: calculate-envs
@@ -52,9 +40,7 @@ jobs:
     with:
       working-directory: ${{ inputs.working-directory }}
       workspace: ${{ matrix.workspace }}
-    secrets:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    secrets: inherit
 
   terraform-apply:
     if: github.event_name == 'push'
@@ -62,7 +48,5 @@ jobs:
     with:
       working-directory: ${{ inputs.working-directory }}
       workspace: prod
-    secrets:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    secrets: inherit
 

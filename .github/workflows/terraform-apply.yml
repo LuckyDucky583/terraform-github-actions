@@ -17,9 +17,34 @@ jobs:
   terraform-apply:
     runs-on: ubuntu-latest
     steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
+
+      - name: Terraform Plan
+        if: ${{ inputs.workspace != null }}
+        run: |
+          terraform workspace select -or-create dev
+          terraform plan -var-file=./env/dev.tfvars
+
+      - name: Terraform Plan Default Workspace
+        if: ${{ inputs.workspace == null}}
+        run: terraform plan
+
       - name: Terraform Apply
-        if: ${{github.event.inputs.workspace !=false}}
-        run: terraform apply -auto-approve -var-file=./env/${{ github.workspace }}.tfvars
+        if: ${{ inputs.workspace != null}}
+        run: terraform apply -auto-approve -var-file=./env/${{ inputs.workspace }}.tfvars
+      
       - name: Terraform Apply
-        if: ${{github.event.inputs.workspace ==false}}
+        if: ${{ inputs.workspace == null}}
         run: terraform apply -auto-approve

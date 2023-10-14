@@ -3,93 +3,48 @@ name: Terraform CI
 on:
   workflow_call:
     inputs:
-      ref: 
-        type: string
-        default: "main"
       working-directory:
         type: string
         default: "."
-      TOOGLE_DEV:
-        type: boolean
-        default: false
-      Toogle_qs:
-        type: boolean
-        default: false
-      TOOGLE_PROD:
-        type: boolean
-        default: false
-
+      workspaces:
+        type: string
+        default: '["default"]'
+      
 jobs:
+
+  calculate-envs:
+    runs-on: ubuntu-latest
+    outputs:
+      envs: ${{ steps.calculate.outputs.envs}}
+    steps:
+      - id: calculate
+        run: |
+          echo "::set-output name=envs::$input"
+        env:
+          input: ${{inputs.workspaces}}
+
   terraform-pre-plan:
-    runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
-    steps:
-      - name: login
-        uses: ./.github/workflows/terraform-login.yml
-      - name: terraform-init
-        uses: ./.github/workflows/terraform-init.yml
-      - name: terraform-validate
-        if: ${{ github.event.inputs.TOOGLE_DEV == true }}
-        uses: ./.github/workflows/terraform-validate.yml
-        with:
-          workspace: dev
-      - name: terraform-validate-in-default
-        if: ${{ github.event.inputs.TOOGLE_DEV != true }}
-        uses: ./.github/workflows/terraform-validate.yml
+    uses: ./.github/workflows/terraform-pre-plan.yml
+    with:
+      working-directory: ${{ inputs.working-directory }}
+      workspace: dev
+
   terraform-plan-pr:
-    runs-on: ubuntu-latest
+    needs: calculate-envs
+    strategy:
+      matrix:
+        workspace: ${{needs.calculate-envs.outputs.envs}}
     if: github.event_name == 'pull_request'
-    steps:
-      - name: login
-        uses: ./.github/workflows/terraform-login.yml
-      - name: plan
-        if: ${{ github.event.inputs.TOOGLE_DEV == true }}
-        uses: ./.github/workflows/terraform-plan.yml
-        with:
-          workspace: dev
-      - name: plan
-        if: ${{ github.event.inputs.TOOGLE_QS == true }}
-        uses: ./.github/workflows/terraform-plan.yml
-        with:
-          workspace: qs
-      - name: plan
-        if: ${{ github.event.inputs.TOOGLE_PROD == true }}
-        uses: ./.github/workflows/terraform-plan.yml
-        with:
-          workspace: prod
+    uses: ./.github/workflows/terraform-plan-pr.yml
+    with:
+      working-directory: ${{ inputs.working-directory }}
+      workspace: ${{ matrix.workspace }}
+
   terraform-apply:
     if: (github.event_name == 'push' && github.ref == 'refs/heads/main')
-    runs-on: ubuntu-latest
-    steps:
-      - name: login
-        uses: ./.github/workflows/terraform-login.yml
-      - name: plan-dev
-        if: ${{ github.event.inputs.TOOGLE_DEV == true }}
-        uses: ./.github/workflows/terraform-plan.yml
-        with:
-          workspace: dev
-      - name: plan-qs
-        if: ${{ github.event.inputs.TOOGLE_QS == true }}
-        uses: ./.github/workflows/terraform-plan.yml
-        with:
-          workspace: qs
-      - name: plan-prod
-        if: ${{ github.event.inputs.TOOGLE_PROD == true }}
-        uses: ./.github/workflows/terraform-plan.yml
-        with:
-          workspace: prod
-      - name: apply-dev
-        if: (${{ github.event.inputs.TOOGLE_DEV == true }})
-        uses: ./.github/workflows/terraform-apply.yml
-        with:
-          workspace: dev
-      - name: apply-qs
-        if: (${{ github.event.inputs.TOOGLE_qs == true }})
-        uses: ./.github/workflows/terraform-apply.yml
-        with:
-          workspace: qs
-      - name: apply-prod
-        if: (${{ github.event.inputs.TOOGLE_PROD == true }})
-        uses: ./.github/workflows/terraform-apply.yml
-        with:
-          workspace: prod
+    uses: ./.github/workflows/terraform-apply.yml
+    with:
+      workspace: prod
+      working-directory: ${{ inputs.working-directory }}
+

@@ -8,7 +8,6 @@ on:
           default: "."
         workspace:
           type: string
-          default: null
 
 jobs: 
     terraform-plan-pr:
@@ -29,12 +28,14 @@ jobs:
             aws-region: eu-central-1
 
         - name: Terraform Plan
-          if: ${{ inputs.workspace != null }}
+          if: ${{ inputs.workspace != 'default' }}
           run: |
             terraform workspace select -or-create ${{inputs.workspace}}
             terraform plan -var-file=./env/dev.tfvars
+          working-directory: ${{inputs.working-directory}}
 
         - name: Terraform Plan Default Workspace
-          if: ${{ inputs.workspace == null}}
+          if: ${{ inputs.workspace == 'default' }}
           run: terraform plan
+          working-directory: ${{inputs.working-directory}}
       

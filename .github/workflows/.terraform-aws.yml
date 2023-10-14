@@ -28,7 +28,6 @@ jobs:
     uses: ./.github/workflows/terraform-pre-plan.yml
     with:
       working-directory: ${{ inputs.working-directory }}
-      workspace: dev
 
   terraform-plan-pr:
     needs: calculate-envs
@@ -45,6 +44,6 @@ jobs:
     if: (github.event_name == 'push' && github.ref == 'refs/heads/main')
     uses: ./.github/workflows/terraform-apply.yml
     with:
-      workspace: prod
       working-directory: ${{ inputs.working-directory }}
+      workspace: prod
 

@@ -11,7 +11,7 @@ on:
       workspace:
         description: "The terraform workspace to use"
         type: string
-        required: false
+        required: true
 
 jobs:
   terraform-apply:
@@ -40,15 +40,19 @@ jobs:
         run: |
           terraform workspace select -or-create dev
           terraform plan -var-file=./env/dev.tfvars
+        working-directory: ${{inputs.working-directory}}
 
       - name: Terraform Plan Default Workspace
         if: ${{ inputs.workspace == 'default'}}
         run: terraform plan
+        working-directory: ${{inputs.working-directory}}
 
       - name: Terraform Apply
         if: ${{ inputs.workspace != 'default'}}
         run: terraform apply -auto-approve -var-file=./env/${{ inputs.workspace }}.tfvars
+        working-directory: ${{inputs.working-directory}}
       
       - name: Terraform Apply
         if: ${{ inputs.workspace == 'default'}}
         run: terraform apply -auto-approve
+        working-directory: ${{inputs.working-directory}}

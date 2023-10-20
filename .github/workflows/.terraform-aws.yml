@@ -20,6 +20,7 @@ jobs:
       - id: calculate
         run: |
           echo "::set-output name=envs::$input"
+          echo "{name}={envs} >> $GITHUB_OUTPUT"
         env:
           input: ${{inputs.workspaces}}
 

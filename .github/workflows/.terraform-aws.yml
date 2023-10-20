@@ -12,18 +12,6 @@ on:
       
 jobs:
 
-  calculate-envs:
-    runs-on: ubuntu-latest
-    outputs:
-      envs: ${{ steps.calculate.outputs.envs}}
-    steps:
-      - id: calculate
-        run: |
-          echo "::set-output name=envs::$input"
-          echo "{name}={envs}::$input >> $GITHUB_OUTPUT"
-        env:
-          input: ${{inputs.workspaces}}
-
   terraform-pre-plan:
     if: github.event_name == 'pull_request'
     uses: ./.github/workflows/terraform-pre-plan.yml
@@ -32,10 +20,9 @@ jobs:
     secrets: inherit
 
   terraform-plan-pr:
-    needs: calculate-envs
     strategy:
       matrix:
-        workspace: ${{fromJson(needs.calculate-envs.outputs.envs)}}
+        workspace: ${{fromJson(inputs.workspaces)}}
     if: github.event_name == 'pull_request'
     uses: ./.github/workflows/terraform-plan-pr.yml
     with:

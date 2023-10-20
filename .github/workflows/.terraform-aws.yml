@@ -8,7 +8,7 @@ on:
         default: "."
       workspaces:
         type: string
-        default: "default"
+        default: '"default", "dev", "live"'
       
 jobs:
 
@@ -20,7 +20,7 @@ jobs:
       - id: calculate
         run: |
           echo "::set-output name=envs::$input"
-          echo "{name}={envs} >> $GITHUB_OUTPUT"
+          echo "{name}={envs}::$input >> $GITHUB_OUTPUT"
         env:
           input: ${{inputs.workspaces}}
 
@@ -35,7 +35,7 @@ jobs:
     needs: calculate-envs
     strategy:
       matrix:
-        workspace: ${{needs.calculate-envs.outputs.envs}}
+        workspace: ${{fromJson(needs.calculate-envs.outputs.envs)}}
     if: github.event_name == 'pull_request'
     uses: ./.github/workflows/terraform-plan-pr.yml
     with:

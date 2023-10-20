@@ -36,9 +36,9 @@ jobs:
           aws-region: eu-central-1
 
       - name: Download Plan
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
-          name: plan-${{inputs.working-directory}}
+          name: plan-${{ inputs.workspace }}
           path: ${{inputs.working-directory}}/plan.tfplan
 
       - name: Terraform Apply

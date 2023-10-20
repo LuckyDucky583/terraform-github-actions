@@ -8,7 +8,7 @@ on:
         default: "."
       workspaces:
         type: string
-        default: '"default", "dev", "live"'
+        default: '["default", "dev", "live"]'
       
 jobs:
 

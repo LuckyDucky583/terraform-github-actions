@@ -45,5 +45,5 @@ jobs:
         - name: Upload Plan
           uses: actions/upload-artifact@v3
           with:
-            name: plan-${{inputs.working-directory}}
+            name: plan-${{inputs.workspace}}
             path: ${{inputs.working-directory}}/plan.tfplan

@@ -19,12 +19,12 @@ jobs:
       working-directory: ${{ inputs.working-directory }}
     secrets: inherit
 
-  terraform-plan-pr:
+  terraform-plan:
     strategy:
       matrix:
         workspace: ${{fromJson(inputs.workspaces)}}
     if: github.event_name == 'pull_request'
-    uses: ./.github/workflows/terraform-plan-pr.yml
+    uses: ./.github/workflows/terraform-plan.yml
     with:
       working-directory: ${{ inputs.working-directory }}
       workspace: ${{ matrix.workspace }}

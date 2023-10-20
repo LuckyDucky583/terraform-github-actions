@@ -17,7 +17,7 @@ jobs:
   terraform-apply:
     runs-on: ubuntu-latest
     if: 
-      (github.ref == 'refs/heads/main' && (${{inputs.workspace}} == 'prod' || ${{inputs.workspace}} == 'default')) ||
+      (github.ref == 'refs/heads/main' && (${{inputs.workspace}} == 'prod' || github.ref == 'refs/heads/main' && ${{inputs.workspace}} == 'default')) ||
       (github.ref == 'refs/heads/lab' && ${{inputs.workspace}} == 'dev') ||
       (github.ref == 'refs/heads/qs' && ${{inputs.workspace}} == 'qs')
     steps:
@@ -35,24 +35,18 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-central-1
 
-      - name: Terraform Plan
-        if: ${{ inputs.workspace != 'default' }}
-        run: |
-          terraform workspace select -or-create dev
-          terraform plan -var-file=./env/dev.tfvars
-        working-directory: ${{inputs.working-directory}}
-
-      - name: Terraform Plan Default Workspace
-        if: ${{ inputs.workspace == 'default'}}
-        run: terraform plan
-        working-directory: ${{inputs.working-directory}}
+      - name: Download Plan
+        uses: actions/download-artifact@v2
+        with:
+          name: plan-${{inputs.working-directory}}
+          path: ${{inputs.working-directory}}/plan.tfplan
 
       - name: Terraform Apply
         if: ${{ inputs.workspace != 'default'}}
-        run: terraform apply -auto-approve -var-file=./env/${{ inputs.workspace }}.tfvars
+        run: terraform apply "plan.tfplan" -auto-approve -var-file=./env/${{ inputs.workspace }}.tfvars
         working-directory: ${{inputs.working-directory}}
       
-      - name: Terraform Apply
+      - name: Terraform Apply Default
         if: ${{ inputs.workspace == 'default'}}
-        run: terraform apply -auto-approve
+        run: terraform apply -auto-approve "plan.tfplan"
         working-directory: ${{inputs.working-directory}}

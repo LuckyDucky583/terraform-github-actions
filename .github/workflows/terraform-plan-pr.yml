@@ -30,12 +30,15 @@ jobs:
         - name: Terraform Plan
           if: ${{ inputs.workspace != 'default' }}
           run: |
+            terraform init
             terraform workspace select -or-create ${{inputs.workspace}}
             terraform plan -var-file=./env/dev.tfvars
           working-directory: ${{inputs.working-directory}}
 
         - name: Terraform Plan Default Workspace
           if: ${{ inputs.workspace == 'default' }}
-          run: terraform plan
+          run: |
+            terraform init
+            terraform plan
           working-directory: ${{inputs.working-directory}}
       

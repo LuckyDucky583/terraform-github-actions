@@ -20,6 +20,7 @@ jobs:
     secrets: inherit
 
   terraform-plan:
+    needs: terraform-pre-plan
     strategy:
       matrix:
         workspace: ${{fromJson(inputs.workspaces)}}

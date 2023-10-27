@@ -16,10 +16,7 @@ on:
 jobs:
   terraform-apply:
     runs-on: ubuntu-latest
-    if: 
-      (github.ref == 'refs/heads/main' && (${{inputs.workspace}} == 'prod' || github.ref == 'refs/heads/main' && ${{inputs.workspace}} == 'default')) ||
-      (github.ref == 'refs/heads/lab' && ${{inputs.workspace}} == 'dev') ||
-      (github.ref == 'refs/heads/qs' && ${{inputs.workspace}} == 'qs')
+    
     steps:
 
       - name: Checkout

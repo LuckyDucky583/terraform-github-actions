@@ -14,7 +14,7 @@ jobs:
 
   terraform-pre-plan:
     if: github.event_name == 'pull_request'
-    uses: ./.github/workflows/terraform-pre-plan.yml
+    uses: ./.github/workflows/terraform-check.yml
     with:
       working-directory: ${{ inputs.working-directory }}
     secrets: inherit

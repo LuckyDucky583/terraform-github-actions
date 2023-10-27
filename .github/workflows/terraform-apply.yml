@@ -36,7 +36,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: plan-${{ inputs.workspace }}
-          path: ${{inputs.working-directory}}/plan.tfplan
+          path: ${{inputs.working-directory}}
 
       - name: Terraform Apply
         if: ${{ inputs.workspace != 'default'}}

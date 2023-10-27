@@ -42,10 +42,10 @@ jobs:
         if: ${{ inputs.workspace != 'default'}}
         run: |
           terraform workspace select -or-create ${{inputs.workspace}}
-          terraform apply -auto-approve -var-file=./env/${{ inputs.workspace }}.tfvars "plan.tfplan"
+          terraform apply -auto-approve -var-file=./env/${{ inputs.workspace }}.tfvars ${{inputs.working-directory}}/plan.tfplan
         working-directory: ${{inputs.working-directory}}
       
       - name: Terraform Apply Default
         if: ${{ inputs.workspace == 'default'}}
-        run: terraform apply -auto-approve "plan.tfplan"
+        run: terraform apply -auto-approve ${{inputs.working-directory}}/plan.tfplan
         working-directory: ${{inputs.working-directory}}

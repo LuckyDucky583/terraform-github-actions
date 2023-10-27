@@ -47,7 +47,7 @@ jobs:
       matrix:
         workspace: ${{fromJson(inputs.workspaces)}}
     needs: terraform-plan-before-apply
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/lab' || github.ref == 'refs/heads/qs')
+    if: github.event_name == 'push'
     uses: ./.github/workflows/terraform-apply.yml
     with:
       working-directory: ${{ inputs.working-directory }}

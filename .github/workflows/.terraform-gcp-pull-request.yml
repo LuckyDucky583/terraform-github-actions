@@ -13,7 +13,7 @@ on:
 jobs:
 
   terraform-validate:
-    uses: ./.github/workflows/terraform-check-aws.yml
+    uses: ./.github/workflows/terraform-check-gcp.yml
     with:
       working-directory: ${{ inputs.working-directory }}
     secrets: inherit
@@ -23,7 +23,7 @@ jobs:
     strategy:
       matrix:
         workspace: ${{fromJson(inputs.workspaces)}}
-    uses: ./.github/workflows/terraform-plan-aws.yml
+    uses: ./.github/workflows/terraform-plan-gcp.yml
     with:
       working-directory: ${{ inputs.working-directory }}
       workspace: ${{ matrix.workspace }}

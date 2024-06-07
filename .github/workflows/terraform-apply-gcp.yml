@@ -1,0 +1,63 @@
+name: terraform-apply
+
+on:
+  workflow_call:
+    inputs:
+      working-directory:
+        description: "The working directory where the terraform files are located"
+        type: string
+        required: true
+        default: "../terraform/"
+      workspace:
+        description: "The terraform workspace to use"
+        type: string
+        required: true
+
+jobs:
+  terraform-apply:
+    runs-on: ubuntu-latest
+    
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Configure google cloud Credentials
+        uses: 'google-github-actions/auth@v2'
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.7'
+
+
+      - name: Download Plan
+        uses: actions/download-artifact@v3
+        with:
+          name: plan-${{ inputs.workspace }}
+          path: ${{inputs.working-directory}}
+
+      - name: Terraform Apply
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if: ${{ inputs.workspace != 'default'}}
+        run: |
+          terraform init
+          terraform workspace select -or-create ${{inputs.workspace}}
+          terraform apply -auto-approve -var-file=./env/${{ inputs.workspace }}.tfvars ./plan.tfplan
+        working-directory: ${{inputs.working-directory}}
+      
+      - name: Terraform Apply Default
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if: ${{ inputs.workspace == 'default'}}
+        run: |
+          terraform init
+          terraform apply -auto-approve ./plan.tfplan
+        working-directory: ${{inputs.working-directory}}

@@ -8,6 +8,7 @@ This repository contains a collection of GitHub Actions workflows designed to au
 - `.github/workflows/terraform-plan.yml`: This workflow performs a Terraform plan operation to show what changes would be made to your infrastructure without applying them.
 - `.github/workflows/terraform-apply.yml`: This workflow applies the changes proposed in the Terraform plan to your infrastructure.
 - `.github/workflows/terraform-destroy.yml`: This workflow destroys the Terraform-managed infrastructure.
+All of the workflows above are available for both aws and gcp
 
 ## Context and Purpose
 

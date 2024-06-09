@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         workspace: ${{fromJson(inputs.workspaces)}}
-    uses: ./.github/workflows/terraform-plan.yml
+    uses: ./.github/workflows/terraform-plan-aws.yml
     with:
       working-directory: ${{ inputs.working-directory }}
       workspace: ${{ matrix.workspace }}
@@ -27,7 +27,7 @@ jobs:
       matrix:
         workspace: ${{fromJson(inputs.workspaces)}}
     needs: terraform-plan
-    uses: ./.github/workflows/terraform-apply.yml
+    uses: ./.github/workflows/terraform-apply-aws.yml
     with:
       working-directory: ${{ inputs.working-directory }}
       workspace: ${{ matrix.workspace }}

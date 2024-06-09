@@ -12,18 +12,22 @@ on:
       
 jobs:
 
-  terraform-validate:
-    uses: ./.github/workflows/terraform-check-aws.yml
-    with:
-      working-directory: ${{ inputs.working-directory }}
-    secrets: inherit
-
   terraform-plan:
-    needs: terraform-validate
     strategy:
       matrix:
         workspace: ${{fromJson(inputs.workspaces)}}
-    uses: ./.github/workflows/terraform-plan-aws.yml
+    uses: ./.github/workflows/terraform-plan-gcp.yml
+    with:
+      working-directory: ${{ inputs.working-directory }}
+      workspace: ${{ matrix.workspace }}
+    secrets: inherit
+
+  terraform-apply:
+    strategy:
+      matrix:
+        workspace: ${{fromJson(inputs.workspaces)}}
+    needs: terraform-plan
+    uses: ./.github/workflows/terraform-apply-gcp.yml
     with:
       working-directory: ${{ inputs.working-directory }}
       workspace: ${{ matrix.workspace }}
